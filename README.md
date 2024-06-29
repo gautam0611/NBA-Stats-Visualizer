@@ -1,1 +1,3 @@
 # NBA-Stats-Visualizer
+
+## Purpose
