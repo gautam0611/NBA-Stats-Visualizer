@@ -14,57 +14,57 @@ class ConferenceBase(BaseModel):
 class Conference(ConferenceBase):
     id: int
     class Config:
-        orm_mode=True
+        from_attributes = True
 
 class TeamBase(BaseModel): 
     name: str 
 
 class Team(TeamBase):
     id: int
-    conference_id: Conference.id # @FIXME figure out what needs to be done when you have foreign keys 
+    conference_id: int # @FIXME figure out what needs to be done when you have foreign keys 
     class Config:
-        orm_mode=True
+        from_attributes = True
     
 class SeasonBase(BaseModel): 
     name: str
 
 class Season(SeasonBase):
     id: int
-    team_id: Team.id
+    team_id: int
     class Config:
-        orm_mode=True
+        from_attributes = True
 
 class RosterBase(BaseModel): 
     name: str
 
 class Roster(RosterBase):
     id: int
-    season_id: Season.id
+    season_id: int
     class Config:
-        orm_mode=True
+        from_attributes = True
 
 class RecordBase(BaseModel): 
     name: str
 
 class Record(RecordBase):
     id: int
-    season_id: Season.id
+    season_id: int
     class Config:
-        orm_mode=True
+        from_attributes = True
 
 class GamesBase(BaseModel): 
     name: str
 
 class Games(GamesBase):
     id: int
-    season_id: Season.id
+    season_id: int
 
 class PlayersBase(BaseModel): 
     name: str
     points: Decimal
     rebounds: Decimal
     assists: Decimal
-    roster_id: Roster.id
+    roster_id: int
 
 
 

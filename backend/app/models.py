@@ -2,7 +2,7 @@
 This file contains the sql alchemy models
 """
 from decimal import Decimal
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DECIMAL
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -50,9 +50,9 @@ class Player(Base):
     __tablename__="Player"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
-    points = Column(Decimal(10, 2), nullable=False)
-    rebounds = Column(Decimal(10, 2), nullable=False)
-    assists = Column(Decimal(10, 2), nullable=False)
+    points = Column(DECIMAL(10, 2))
+    rebounds = Column(DECIMAL(10, 2))
+    assists = Column(DECIMAL(10, 2))
     roster_id = Column(Integer, ForeignKey('Roster.id'))
     roster = relationship("Roster", back_populates="Player")
     

@@ -3,7 +3,7 @@ This file contains the CRUD operations.
 """
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from . import models, schemas
+from . import models
 
 # @FIXME fix the to do expressions to include the main table's primary key 
 
