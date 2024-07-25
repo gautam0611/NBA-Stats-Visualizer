@@ -77,15 +77,18 @@ class Games(GamesBase):
     id: int
     season_id: int
 
-class PlayersBase(BaseModel): 
+class PlayerBase(BaseModel): 
     name: str
     points: Decimal
     rebounds: Decimal
     assists: Decimal
-    roster_id: int
 
-class PlayersCreate(PlayersBase):
+class PlayerCreate(PlayerBase):
     pass
+
+class Player(PlayerBase):
+    id: int
+    roster_id: int
 
 
 

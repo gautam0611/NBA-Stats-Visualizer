@@ -53,8 +53,14 @@ def get_games(season_id: int, team_id: int, db: Session = Depends(get_db)):
 # POST requests (*TO-DO*)
 
 # 1) POST/conference
+@app.post("/conference/", response_model=schemas.Conference)
+def create_conference(conference: schemas.ConferenceCreate, db: Session = Depends(get_db)):
+    return crud.create_conference(db=db, conference=conference)
 
 # 2) POST/teams
+@app.post("/team/", response_model=schemas.Team)
+def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
+    return crud.create_team(db=db, team=team)
 
 # 3) POST/{season_id}/record
 

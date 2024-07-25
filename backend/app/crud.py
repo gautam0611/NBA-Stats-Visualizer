@@ -4,7 +4,7 @@ This file contains the CRUD operations.
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from backend.app.schemas import Conference, ConferenceCreate, Season, SeasonCreate, Team, TeamCreate
+from backend.app.schemas import Conference, ConferenceCreate, Games, GamesCreate, Player, PlayerCreate, Season, SeasonCreate, Team, TeamCreate
 from . import models
 
 # @FIXME fix the to do expressions to include the main table's primary key 
@@ -63,7 +63,22 @@ def create_season(db: Session, season: SeasonCreate):
     db.refresh(db_season)
     return db_season
 
-# POST /games
+# POST /game
+def create_game(db: Session, game: GamesCreate):
+    db_game = Games(name=game.name)
+    db.add(db_game)
+    db.commit()
+    db.refresh(db_game)
+    return db_game
+
+# POST /player
+def create_player(db: Session, player: PlayerCreate):
+    db_player = Player(name=player.name, points=player.points, rebounds=player.rebounds, assists=player.assists)
+    db.add(db_player)
+    db.commit()
+    db.refresh(db_player)
+    return db_player
+
 
 
 
