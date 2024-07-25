@@ -11,13 +11,19 @@ from pydantic import BaseModel
 class ConferenceBase(BaseModel):
     name: str 
 
+class ConferenceCreate(ConferenceBase):
+    pass
+
 class Conference(ConferenceBase):
     id: int
     class Config:
         from_attributes = True
 
 class TeamBase(BaseModel): 
-    name: str 
+    name: str
+
+class TeamCreate(TeamBase):
+    pass 
 
 class Team(TeamBase):
     id: int
@@ -28,6 +34,9 @@ class Team(TeamBase):
 class SeasonBase(BaseModel): 
     name: str
 
+class SeasonCreate(SeasonBase):
+    pass
+
 class Season(SeasonBase):
     id: int
     team_id: int
@@ -36,6 +45,9 @@ class Season(SeasonBase):
 
 class RosterBase(BaseModel): 
     name: str
+
+class RosterCreate(RosterBase):
+    pass
 
 class Roster(RosterBase):
     id: int
@@ -46,6 +58,9 @@ class Roster(RosterBase):
 class RecordBase(BaseModel): 
     name: str
 
+class RecordCreate(RecordBase):
+    pass
+
 class Record(RecordBase):
     id: int
     season_id: int
@@ -54,6 +69,9 @@ class Record(RecordBase):
 
 class GamesBase(BaseModel): 
     name: str
+
+class GamesCreate(GamesBase):
+    pass
 
 class Games(GamesBase):
     id: int
@@ -65,6 +83,9 @@ class PlayersBase(BaseModel):
     rebounds: Decimal
     assists: Decimal
     roster_id: int
+
+class PlayersCreate(PlayersBase):
+    pass
 
 
 

@@ -3,6 +3,8 @@ This file contains the CRUD operations.
 """
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+
+from backend.app.schemas import Conference, ConferenceCreate, Season, SeasonCreate, Team, TeamCreate
 from . import models
 
 # @FIXME fix the to do expressions to include the main table's primary key 
@@ -36,6 +38,34 @@ def get_roster(db: Session, roster_id: int, season_id: int, team_id: int):
 # get the games for the specified season
 def get_games(db: Session, season_id: int, team_id: int):
     return db.query(models.Games).join(models.Season, models.Games.season_id == models.Season.id).filter(and_(models.Season.id == season_id, models.Season.team_id == team_id)).all()
+
+# POST /conference
+def create_conference(db: Session, conference: ConferenceCreate):
+    db_conference = Conference(conference.name)
+    db.add(db_conference)
+    db.commit()
+    db.refresh(db_conference)
+    return db_conference
+
+# POST /team
+def create_team(db: Session, team: TeamCreate):
+    db_team = Team(name=team.name)
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+    return db_team
+
+# POST /season
+def create_season(db: Session, season: SeasonCreate):
+    db_season = Season(name=season.name)
+    db.add(db_season)
+    db.commit()
+    db.refresh(db_season)
+    return db_season
+
+# POST /games
+
+
 
 
 

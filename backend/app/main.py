@@ -51,3 +51,13 @@ def get_games(season_id: int, team_id: int, db: Session = Depends(get_db)):
     return db_games
 
 # POST requests (*TO-DO*)
+
+# 1) POST/conference
+
+# 2) POST/teams
+
+# 3) POST/{season_id}/record
+
+# 2) POST/{season_id}/roster
+
+# 3) POST/{season_id}/games
