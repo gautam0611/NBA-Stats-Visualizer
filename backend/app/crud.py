@@ -4,9 +4,9 @@ This file contains the CRUD operations.
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from backend.app.schemas import ConferenceCreate, GamesCreate, PlayerCreate, RosterCreate, SeasonCreate, TeamCreate
+from backend.app.schemas import ConferenceCreate, GamesCreate, PlayerCreate, RecordCreate, RosterCreate, SeasonCreate, TeamCreate
 from . import models
-from app.models import Conference, Team, Roster, Games, Player, Season
+from app.models import Conference, Record, Team, Roster, Games, Player, Season
 
 # @FIXME fix the to do expressions to include the main table's primary key 
 
@@ -92,6 +92,14 @@ def create_roster(db: Session, roster: RosterCreate):
     db.commit()
     db.refresh(db_roster)
     return db_roster
+
+# POST /record
+def create_record(db: Session, record: RecordCreate):
+    db_record = Record(name=record.name)
+    db.add(db_record)
+    db.commit()
+    db.refresh(db_record)
+    return db_record
 
 
 
