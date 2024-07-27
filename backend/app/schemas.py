@@ -11,31 +11,28 @@ from pydantic import BaseModel
 class ConferenceBase(BaseModel):
     name: str 
 
-class ConferenceCreate(ConferenceBase):
-    pass
-
 class Conference(ConferenceBase):
     id: int
     class Config:
         from_attributes = True
 
+class ConferenceCreate(ConferenceBase):
+    pass
+
 class TeamBase(BaseModel): 
     name: str
-
-class TeamCreate(TeamBase):
-    pass 
 
 class Team(TeamBase):
     id: int
     conference_id: int # @FIXME figure out what needs to be done when you have foreign keys 
     class Config:
         from_attributes = True
+
+class TeamCreate(TeamBase):
+    conference_id: int 
     
 class SeasonBase(BaseModel): 
     name: str
-
-class SeasonCreate(SeasonBase):
-    pass
 
 class Season(SeasonBase):
     id: int
@@ -43,11 +40,11 @@ class Season(SeasonBase):
     class Config:
         from_attributes = True
 
+class SeasonCreate(SeasonBase):
+    team_id: int
+
 class RosterBase(BaseModel): 
     name: str
-
-class RosterCreate(RosterBase):
-    pass
 
 class Roster(RosterBase):
     id: int
@@ -55,11 +52,11 @@ class Roster(RosterBase):
     class Config:
         from_attributes = True
 
+class RosterCreate(RosterBase):
+    season_id: int
+
 class RecordBase(BaseModel): 
     name: str
-
-class RecordCreate(RecordBase):
-    pass
 
 class Record(RecordBase):
     id: int
@@ -67,14 +64,17 @@ class Record(RecordBase):
     class Config:
         from_attributes = True
 
+class RecordCreate(RecordBase):
+    season_id: int
+
 class GamesBase(BaseModel): 
     name: str
 
-class GamesCreate(GamesBase):
-    pass
-
 class Games(GamesBase):
     id: int
+    season_id: int
+
+class GamesCreate(GamesBase):
     season_id: int
 
 class PlayerBase(BaseModel): 
@@ -83,12 +83,14 @@ class PlayerBase(BaseModel):
     rebounds: Decimal
     assists: Decimal
 
-class PlayerCreate(PlayerBase):
-    pass
-
 class Player(PlayerBase):
     id: int
     roster_id: int
+
+class PlayerCreate(PlayerBase):
+    roster_id: int
+
+
 
 
 

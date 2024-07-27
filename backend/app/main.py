@@ -61,9 +61,18 @@ def create_conference(conference: schemas.ConferenceCreate, db: Session = Depend
 @app.post("/team/", response_model=schemas.Team)
 def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
     return crud.create_team(db=db, team=team)
-
+ 
 # 3) POST/{season_id}/record
+@app.post("/record/", response_model=schemas.Record)
+def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
+    return crud.create_record(db, record=record)
 
-# 2) POST/{season_id}/roster
+# 4) POST/{season_id}/roster
+@app.post("/roster/", response_model=schemas.Roster)
+def create_roster(roster: schemas.Roster, db: Session = Depends(get_db)):
+    return crud.create_roster(db, roster=roster)
 
-# 3) POST/{season_id}/games
+# 5) POST/{season_id}/games
+@app.post("/games/", response_model=schemas.Games)
+def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
+    return crud.create_game(db, game=games)

@@ -4,8 +4,9 @@ This file contains the CRUD operations.
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from backend.app.schemas import Conference, ConferenceCreate, Games, GamesCreate, Player, PlayerCreate, Season, SeasonCreate, Team, TeamCreate
+from backend.app.schemas import ConferenceCreate, GamesCreate, PlayerCreate, RosterCreate, SeasonCreate, TeamCreate
 from . import models
+from app.models import Conference, Team, Roster, Games, Player, Season
 
 # @FIXME fix the to do expressions to include the main table's primary key 
 
@@ -39,6 +40,11 @@ def get_roster(db: Session, roster_id: int, season_id: int, team_id: int):
 def get_games(db: Session, season_id: int, team_id: int):
     return db.query(models.Games).join(models.Season, models.Games.season_id == models.Season.id).filter(and_(models.Season.id == season_id, models.Season.team_id == team_id)).all()
 
+# GET /players/{team_id}?{season_id}
+# get a list of players on a team for a specific season
+def get_players(db: Session, team_id: int, season_id: int):
+    return db.query(models.Player).join(models.Roster, models.Player.roster_id == models.Roster.id).join(models.Season, models.Roster.season_id == models.Season.id).join(models.Team, models.Season.team_id == models.Team.id).filter(and_(models.Team.id == team_id, models.Season.id == season_id)).all()
+
 # POST /conference
 def create_conference(db: Session, conference: ConferenceCreate):
     db_conference = Conference(conference.name)
@@ -55,7 +61,7 @@ def create_team(db: Session, team: TeamCreate):
     db.refresh(db_team)
     return db_team
 
-# POST /season
+# POST /season/{season_id}?{team_id}
 def create_season(db: Session, season: SeasonCreate):
     db_season = Season(name=season.name)
     db.add(db_season)
@@ -63,7 +69,7 @@ def create_season(db: Session, season: SeasonCreate):
     db.refresh(db_season)
     return db_season
 
-# POST /game
+# POST /game/{season_id}?{team_id}
 def create_game(db: Session, game: GamesCreate):
     db_game = Games(name=game.name)
     db.add(db_game)
@@ -71,13 +77,21 @@ def create_game(db: Session, game: GamesCreate):
     db.refresh(db_game)
     return db_game
 
-# POST /player
+# POST /player/{team_id}?{season_id}
 def create_player(db: Session, player: PlayerCreate):
     db_player = Player(name=player.name, points=player.points, rebounds=player.rebounds, assists=player.assists)
     db.add(db_player)
     db.commit()
     db.refresh(db_player)
     return db_player
+
+# POST /roster/{roster_id}?{season_id}?{team_id}
+def create_roster(db: Session, roster: RosterCreate):
+    db_roster = Roster(name=roster.name)
+    db.add(db_roster)
+    db.commit()
+    db.refresh(db_roster)
+    return db_roster
 
 
 
