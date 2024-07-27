@@ -4,7 +4,7 @@ This file contains the CRUD operations.
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from backend.app.schemas import ConferenceCreate, GamesCreate, PlayerCreate, RecordCreate, RosterCreate, SeasonCreate, TeamCreate
+from app.schemas import ConferenceCreate, GamesCreate, PlayerCreate, RecordCreate, RosterCreate, SeasonCreate, TeamCreate
 from . import models
 from app.models import Conference, Record, Team, Roster, Games, Player, Season
 
