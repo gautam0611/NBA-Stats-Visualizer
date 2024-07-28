@@ -15,17 +15,18 @@ class Conference(ConferenceBase):
 class ConferenceCreate(ConferenceBase):
     pass
 
-class DivisionBase(BaseModel): 
+class DivisionBase(BaseModel):
     name: str
 
 class Division(DivisionBase):
     id: int
-    conference_id: int 
+    conference_id: int
+
     class Config:
         from_attributes = True
 
 class DivisionCreate(DivisionBase):
-    conference_id: int 
+    conference_id: int
 
 # class TeamBase(BaseModel): 
 #     name: str

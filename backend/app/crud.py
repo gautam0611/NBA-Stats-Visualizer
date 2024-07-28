@@ -60,7 +60,7 @@ def create_conference(db: Session, conference: ConferenceCreate):
 
 # POST /division
 def create_division(db: Session, division: DivisionCreate):
-    db_division = models.Division(name=division.name)
+    db_division = models.Division(name=division.name, conference_id=division.conference_id)
     db.add(db_division)
     db.commit()
     db.refresh(db_division)

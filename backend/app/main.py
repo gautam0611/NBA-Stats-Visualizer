@@ -65,9 +65,15 @@ def create_conference(conference: schemas.ConferenceCreate, db: Session = Depend
     return crud.create_conference(db=db, conference=conference)
 
 # 2) POST/division
-@app.post("/division/", response_model=schemas.Division)
-def create_division(division: schemas.DivisionCreate, db: Session = Depends(get_db)):
-    return crud.create_division(db=db, division=division)
+@app.post("/division/{conference_id}", response_model=schemas.Division)
+def create_division(conference_id: int, division: schemas.DivisionCreate, db: Session = Depends(get_db)):
+    # Check if the conference exists
+    conference = db.query(models.Conference).filter(models.Conference.id == conference_id).first()
+    if not conference:
+        raise HTTPException(status_code=404, detail="Conference not found")
+    
+    division_create = schemas.DivisionCreate(name=division.name, conference_id=conference_id)
+    return crud.create_division(db=db, division=division_create)
 
 # # 2) POST/teams
 # @app.post("/team/", response_model=schemas.Team)

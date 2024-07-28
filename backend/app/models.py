@@ -13,14 +13,14 @@ class Conference(Base):
     __tablename__="Conference"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
-    division = relationship('Division', back_populates='Conference')
+    division = relationship('Division', backref='Conference')
 
 class Division(Base):
     __tablename__="Division"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
     conference_id = Column(Integer, ForeignKey('Conference.id'))
-    conference = relationship("Conference", back_populates="Division")
+    conference = relationship("Conference", backref="Division")
 
 # class Team(Base):
 #     __tablename__="Team"
