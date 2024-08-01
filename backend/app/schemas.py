@@ -75,6 +75,7 @@ class RecordBase(BaseModel):
 class Record(RecordBase):
     id: int
     season_id: int
+    team_id: int
 
     class Config:
         from_attributes = True
@@ -92,6 +93,7 @@ class GamesBase(BaseModel):
 class Games(GamesBase):
     id: int
     season_id: int
+    team_id: int
 
 
 class GamesCreate(GamesBase):
@@ -109,6 +111,7 @@ class PlayerBase(BaseModel):
 class Player(PlayerBase):
     id: int
     season_id: int
+    team_id: int
 
 
 class PlayerCreate(PlayerBase):

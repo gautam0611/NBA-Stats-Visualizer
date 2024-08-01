@@ -125,10 +125,10 @@ def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
     return crud.create_record(db=db, record=record_create)
 
 
-# 5) POST/season
-@app.post("/season/", response_class=schemas.Season)
-def create_season(season: schemas.SeasonCreate, db: Session = Depends(get_db)):
-    return crud.create_season(db, season=season)
+# # 5) POST/season
+# @app.post("/season/", response_class=schemas.Season)
+# def create_season(season: schemas.SeasonCreate, db: Session = Depends(get_db)):
+#     return crud.create_season(db, season=season)
 
 
 # 6) POST/games/{season_id}?{team_id}

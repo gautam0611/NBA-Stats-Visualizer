@@ -1,18 +1,9 @@
 from enum import Enum
-from typing import List
+from typing import Dict, List
 import requests
 from bs4 import BeautifulSoup
 
-
-class StatsType(Enum):
-    TEAM = "teams"
-    DIVISION = "division"
-    PLAYER = "player"
-    ROSTER = "stats"
-    GAMES = "games"
-    RECORD = "record"
-    SEASON = "standings"
-
+from backend.app.web_scraping.stats_type import StatsType
 
 # https://sports.yahoo.com/nba/teams/boston/stats/ -> team stats
 # https://sports.yahoo.com/nba/teams/ -> divisions
@@ -31,12 +22,23 @@ class ScrapeNBAStats:
 
 
 class ScrapeConference(ScrapeNBAStats):
-    pass
+    # web scrapes all of the conferences in the NBA
+    def scrape_nba_statistics(self):
+        url = f"https://sports.yahoo.com/nba/{StatsType.TEAM.value}/"
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content, "lxml")
+
+        list_of_conferences: List[str] = []
+        for h3 in soup.findall("h3", attrs={"class": "Fz(16px) Pb(15px)"}):
+            conference_name = h3.get_text().strip()
+            list_of_conferences.append(conference_name)
+
+        return list_of_conferences
 
 
 class ScrapeDivisions(ScrapeNBAStats):
     # web scrapes all of the divisions in the NBA
-    def scrape_nba_statistics(self):
+    def scrape_nba_statistics(self) -> List[str]:
         url = f"https://sports.yahoo.com/nba/{StatsType.TEAM.value}/"
         r = requests.get(url)
         soup = BeautifulSoup(r.content, "lxml")
@@ -50,34 +52,39 @@ class ScrapeDivisions(ScrapeNBAStats):
                 list_of_divisions.append(divisionName)
         return list_of_divisions
 
-    def json_body_to_return(self):
-        return super().json_body_to_return()
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
 
 
 class ScrapeTeams(ScrapeNBAStats):
-    # web scrapes all of the teams in the specified division
-    def scrape_nba_statistics(self):
+    # web scrapes all of the teams in each division
+    def scrape_nba_statistics(self) -> Dict[str, List[str]]:
         url = f"https://sports.yahoo.com/nba/{StatsType.TEAM.value}"
         r = requests.get(url)
         soup = BeautifulSoup(r.content, "lxml")
 
-        list_of_teams: List[dict[str, str]] = []
+        division_dict = {}
 
-        list_of_divisions = ScrapeDivisions()
+        list_of_divisions = ScrapeDivisions().scrape_nba_statistics()
         for division in list_of_divisions:
-            division_dict = {}
+            list_of_teams: List[dict[str, str]] = []
             for div in soup.find_all(
                 "div", attrs={"class": "Py(5px) Ta(start) Fw(400) Py(6px)"}
             ):
                 team_name = div.div.div.div.div.a.get_text().strip()
                 print(team_name)
-                division_dict[division] = team_name
-            list_of_teams.append(division_dict)
+                list_of_teams.append(team_name)
+            division_dict[division] = list_of_teams
+
+        return division_dict
+
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
 
 
 class ScrapeSeasons(ScrapeNBAStats):
-    # web scrapes all of the seasons in the past 5 years
-    def scrape_seasons(self) -> List[str]:
+    # web scrapes all of the seasons in the past 10 years
+    def scrape_nba_statistics(self) -> List[str]:
         url = f"https://sports.yahoo.com/nba/{StatsType.SEASON.value}"
         r = requests.get(url)
         soup = BeautifulSoup(r.content, "lxml")
@@ -90,11 +97,21 @@ class ScrapeSeasons(ScrapeNBAStats):
 
         return list_of_seasons
 
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
+
 
 class ScrapePlayers(ScrapeNBAStats):
-    # web scrapes all of the players and their stats on the specified team
-    def scrape_players(self) -> List[str]:
-        pass
+    # web scrapes all of the players and their stats on each team
+    def scrape_nba_statistics(self):
+        list_of_nba_teams = ScrapeTeams().scrape_nba_statistics()
+        for team in list_of_nba_teams:
+            url = f"https://sports.yahoo.com/nba/teams/{team}/{StatsType.ROSTER.value}"
+            r = requests.get(url)
+            soup = BeautifulSoup(r.content, "lxml")
+
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
 
 
 class ScrapeRecord(ScrapeNBAStats):
@@ -102,11 +119,17 @@ class ScrapeRecord(ScrapeNBAStats):
     def scrape_nba_statistics(self):
         pass
 
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
+
 
 class ScrapeGames(ScrapeNBAStats):
     # web scrapes the games of the specified team in a specified season
-    def scrape_games(self) -> List[str]:
+    def scrape_nba_statistics(self):
         pass
+
+    # def json_body_to_return(self):
+    #     return super().json_body_to_return()
 
 
 statistics = {

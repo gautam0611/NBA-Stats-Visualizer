@@ -96,7 +96,7 @@ def get_players(db: Session, team_id: int, season_id: int):
     )
 
 
-# --------------------------------------------------------------------------------------
+# # --------------------------------------------------------------------------------------
 
 
 # POST /conference
@@ -128,13 +128,14 @@ def create_team(db: Session, team: TeamCreate):
     return db_team
 
 
-# POST /season/{team_id}
-def create_season(db: Session, season: SeasonCreate):
-    db_season = models.Season(name=season.name, team_id=season.team_id)
-    db.add(db_season)
-    db.commit()
-    db.refresh(db_season)
-    return db_season
+# @FIXME
+# # POST /season/{team_id}
+# def create_season(db: Session, season: SeasonCreate):
+#     db_season = models.Season(name=season.name)
+#     db.add(db_season)
+#     db.commit()
+#     db.refresh(db_season)
+#     return db_season
 
 
 # POST /record

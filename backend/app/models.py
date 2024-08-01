@@ -1,5 +1,5 @@
 """
-This file contains the sql alchemy models
+This file contains the sql alchemy models we use so that we don't need to use direct sql
 """
 
 from decimal import Decimal
