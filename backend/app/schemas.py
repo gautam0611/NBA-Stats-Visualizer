@@ -43,9 +43,7 @@ class TeamBase(BaseModel):
 
 class Team(TeamBase):
     id: int
-    division_id: (
-        int  # @FIXME figure out what needs to be done when you have foreign keys
-    )
+    division_id: int
 
     class Config:
         from_attributes = True
@@ -61,30 +59,13 @@ class SeasonBase(BaseModel):
 
 class Season(SeasonBase):
     id: int
-    team_id: int
 
     class Config:
         from_attributes = True
 
 
 class SeasonCreate(SeasonBase):
-    team_id: int
-
-
-# class RosterBase(BaseModel):
-#     name: str
-
-
-# class Roster(RosterBase):
-#     id: int
-#     season_id: int
-
-#     class Config:
-#         from_attributes = True
-
-
-# class RosterCreate(RosterBase):
-#     season_id: int
+    pass
 
 
 class RecordBase(BaseModel):

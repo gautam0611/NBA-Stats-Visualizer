@@ -11,7 +11,6 @@ from app.schemas import (
     GamesCreate,
     PlayerCreate,
     RecordCreate,
-    RosterCreate,
     SeasonCreate,
     TeamCreate,
 )
@@ -66,23 +65,6 @@ def get_record(db: Session, season_id: int, team_id: int):
         )
         .first()
     )
-
-
-# # GET /roster/{roster_id}?{season_id}?{team_id}
-# # get the roster for that specified season
-# def get_roster(db: Session, roster_id: int, season_id: int, team_id: int):
-#     return (
-#         db.query(models.Roster)
-#         .join(models.Season, models.Roster.season_id == models.Season.id)
-#         .filter(
-#             and_(
-#                 models.Roster.id == roster_id,
-#                 models.Season.id == season_id,
-#                 models.Season.team_id == team_id,
-#             )
-#         )
-#         .first()
-#     )
 
 
 # GET /games/{season_id}?{team_id}
@@ -157,7 +139,9 @@ def create_season(db: Session, season: SeasonCreate):
 
 # POST /record
 def create_record(db: Session, record: RecordCreate):
-    db_record = models.Record(name=record.name, season_id=record.season_id)
+    db_record = models.Record(
+        name=record.name, season_id=record.season_id, team_id=record.team_id
+    )
     db.add(db_record)
     db.commit()
     db.refresh(db_record)
@@ -180,24 +164,12 @@ def create_player(db: Session, player: PlayerCreate):
     return db_player
 
 
-"""
-@FIXME need to update this so that we can add foreign keys
-"""
-
-
-# # POST /game/{season_id}?{team_id}
-# def create_game(db: Session, game: GamesCreate):
-#     db_game = models.Games(name=game.name)
-#     db.add(db_game)
-#     db.commit()
-#     db.refresh(db_game)
-#     return db_game
-
-
-# # POST /roster/{season_id}?{team_id}
-# def create_roster(db: Session, roster: RosterCreate):
-#     db_roster = models.Roster(name=roster.name)
-#     db.add(db_roster)
-#     db.commit()
-#     db.refresh(db_roster)
-#     return db_roster
+# POST /game/{season_id}?{team_id}
+def create_game(db: Session, game: GamesCreate):
+    db_game = models.Games(
+        name=game.name, season_id=game.season_id, team_id=game.team_id
+    )
+    db.add(db_game)
+    db.commit()
+    db.refresh(db_game)
+    return db_game

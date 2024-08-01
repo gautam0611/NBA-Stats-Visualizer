@@ -38,16 +38,9 @@ class Season(Base):
     __tablename__ = "Season"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255))
-    team_id = Column(Integer, ForeignKey("Team.id"))
-    team = relationship("Team", backref="Season")
-
-
-# class Roster(Base):
-#     __tablename__ = "Roster"
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(String(255))
-#     season_id = Column(Integer, ForeignKey("Season.id"))
-#     season = relationship("Season", backref="Roster")
+    player = relationship("Player", backref="Season")
+    games = relationship("Games", backref="Season")
+    record = relationship("Record", backref="Season")
 
 
 class Player(Base):
