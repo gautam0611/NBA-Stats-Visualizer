@@ -11,11 +11,12 @@ class StatsType(Enum):
     ROSTER = "stats"
     GAMES = "games"
     RECORD = "record"
-    SEASON = "season"
+    SEASON = "standings"
 
 
 # https://sports.yahoo.com/nba/teams/boston/stats/ -> team stats
 # https://sports.yahoo.com/nba/teams/ -> divisions
+# https://sports.yahoo.com/nba/standings/ -> standings
 # https://sports.yahoo.com/nba/teams/boston/stats/?season=2023 -> stats for the celtics in 2023-2024
 # https://sports.yahoo.com/nba/standings/?season=2021 -> record for the 2022 season
 # https://sports.yahoo.com/nba/teams/miami/schedule/?season=2023&month=3 -> games miami heat played in april
@@ -24,6 +25,13 @@ class StatsType(Enum):
 class ScrapeNBAStats:
     def scrape_nba_statistics(self):
         raise NotImplementedError("subclasses will handle implementation")
+
+    def json_body_to_return(self):
+        raise NotImplementedError("subclasses will handle implementation")
+
+
+class ScrapeConference(ScrapeNBAStats):
+    pass
 
 
 class ScrapeDivisions(ScrapeNBAStats):
@@ -41,6 +49,9 @@ class ScrapeDivisions(ScrapeNBAStats):
             else:
                 list_of_divisions.append(divisionName)
         return list_of_divisions
+
+    def json_body_to_return(self):
+        return super().json_body_to_return()
 
 
 class ScrapeTeams(ScrapeNBAStats):
@@ -67,7 +78,17 @@ class ScrapeTeams(ScrapeNBAStats):
 class ScrapeSeasons(ScrapeNBAStats):
     # web scrapes all of the seasons in the past 5 years
     def scrape_seasons(self) -> List[str]:
-        pass
+        url = f"https://sports.yahoo.com/nba/{StatsType.SEASON.value}"
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content, "lxml")
+
+        list_of_seasons: List[str] = []
+
+        for select in soup.find("select", attrs={"data-tst": "season-dropdown"}):
+            record = select.option.get_text().strip()
+            list_of_seasons.append(record)
+
+        return list_of_seasons
 
 
 class ScrapePlayers(ScrapeNBAStats):
@@ -79,7 +100,7 @@ class ScrapePlayers(ScrapeNBAStats):
 class ScrapeRecord(ScrapeNBAStats):
     # web scrapes the record of the specifed team in a specifed season
     def scrape_nba_statistics(self):
-        return super().scrape_nba_statistics()
+        pass
 
 
 class ScrapeGames(ScrapeNBAStats):
@@ -88,10 +109,22 @@ class ScrapeGames(ScrapeNBAStats):
         pass
 
 
-statistics = {}
+statistics = {
+    "Conference": ScrapeConference(),
+    "Division": ScrapeDivisions(),
+    "Team": ScrapeTeams(),
+    "Season": ScrapeSeasons(),
+    "Players": ScrapePlayers(),
+    "Record": ScrapeRecord(),
+    "Games": ScrapeGames(),
+}
 
 
 def send_data_to_api(statsType, returnSet):
+    """
+    1. requests.get to get the necessary ids needed for the response object
+    2. abstract response object schema to a helper function
+    """
     # @FIXME change this to an argument
     api_url = f"http://127.0.0.1:8000/{statsType.value}/{1}"
     for value in returnSet:
