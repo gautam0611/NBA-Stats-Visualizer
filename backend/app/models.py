@@ -42,28 +42,12 @@ class Season(Base):
     team = relationship("Team", backref="Season")
 
 
-class Roster(Base):
-    __tablename__ = "Roster"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255))
-    season_id = Column(Integer, ForeignKey("Season.id"))
-    season = relationship("Season", backref="Roster")
-
-
-class Games(Base):
-    __tablename__ = "Games"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255))
-    season_id = Column(Integer, ForeignKey("Season.id"))
-    season = relationship("Season", backref="Games")
-
-
-class Record(Base):
-    __tablename__ = "Record"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255))
-    season_id = Column(Integer, ForeignKey("Season.id"))
-    season = relationship("Season", backref="Record")
+# class Roster(Base):
+#     __tablename__ = "Roster"
+#     id = Column(Integer, primary_key=True, index=True)
+#     name = Column(String(255))
+#     season_id = Column(Integer, ForeignKey("Season.id"))
+#     season = relationship("Season", backref="Roster")
 
 
 class Player(Base):
@@ -73,5 +57,27 @@ class Player(Base):
     points = Column(DECIMAL(10, 2))
     rebounds = Column(DECIMAL(10, 2))
     assists = Column(DECIMAL(10, 2))
-    roster_id = Column(Integer, ForeignKey("Roster.id"))
-    roster = relationship("Roster", backref="Player")
+    season_id = Column(Integer, ForeignKey("Season.id"))
+    team_id = Column(Integer, ForeignKey("Team.id"))
+    season = relationship("Season", backref="Player")
+    team = relationship("Team", backref="Player")
+
+
+class Games(Base):
+    __tablename__ = "Games"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255))
+    season_id = Column(Integer, ForeignKey("Season.id"))
+    team_id = Column(Integer, ForeignKey("Team.id"))
+    season = relationship("Season", backref="Games")
+    team = relationship("Team", backref="Games")
+
+
+class Record(Base):
+    __tablename__ = "Record"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255))
+    season_id = Column(Integer, ForeignKey("Season.id"))
+    team_id = Column(Integer, ForeignKey("Team.id"))
+    season = relationship("Season", backref="Record")
+    team = relationship("Team", backref="Record")

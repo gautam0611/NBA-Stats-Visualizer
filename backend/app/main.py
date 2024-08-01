@@ -79,47 +79,68 @@ def create_conference(
 
 # 2) POST/division
 @app.post("/division/{conference_id}", response_model=schemas.Division)
-def create_division(
-    conference_id: int, division: schemas.DivisionCreate, db: Session = Depends(get_db)
-):
+def create_division(division: schemas.DivisionCreate, db: Session = Depends(get_db)):
     # Check if the conference exists
     conference = (
         db.query(models.Conference)
-        .filter(models.Conference.id == conference_id)
+        .filter(models.Conference.id == division.conference_id)
         .first()
     )
     if not conference:
         raise HTTPException(status_code=404, detail="Conference not found")
 
     division_create = schemas.DivisionCreate(
-        name=division.name, conference_id=conference_id
+        name=division.name, conference_id=division.conference_id
     )
     return crud.create_division(db=db, division=division_create)
 
 
-# 2) POST/teams
+# 3) POST/teams
 @app.post("/team/", response_model=schemas.Team)
 def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
-    return crud.create_team(db=db, team=team)
+    # Check if the division exists
+    division = (
+        db.query(models.Division).filter(models.Division.id == team.division_id).first()
+    )
+    if not division:
+        raise HTTPException(status_code=404, detail="Division not found")
+
+    team_create = schemas.TeamCreate(name=team.name, division_id=team.division_id)
+
+    return crud.create_team(db=db, team=team_create)
+
+
+# 4) POST/record/{season_id}
+@app.post("/record/{season_id}", response_model=schemas.Record)
+def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
+    # Check if the division exists
+    season = (
+        db.query(models.Season).filter(models.Season.id == record.season_id).first()
+    )
+    if not season:
+        raise HTTPException(status_code=404, detail="Season not found")
+
+    record_create = schemas.RecordCreate(name=record.name, season_id=record.season_id)
+
+    return crud.create_record(db=db, record=record_create)
+
+
+# 5) POST/games/{season_id}?{team_id}
+@app.post("/games/{season_id}?{team_id}", response_model=schemas.Games)
+def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
+    return crud.create_game(db, game=games)
 
 
 """
 @FIXME address the create functions
 """
 
-# # 3) POST/record/{season_id}
-# @app.post("/record/{season_id}", response_model=schemas.Record)
-# def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
-#     return crud.create_record(db, record=record)
+# 4 POST/season/{team_id}
+
+# 6 POST/player/{season_id}?{team_id}
 
 
 # # 4) POST/roster/{season_id}
 # @app.post("/roster/{season_id}", response_model=schemas.Roster)
 # def create_roster(roster: schemas.Roster, db: Session = Depends(get_db)):
 #     return crud.create_roster(db, roster=roster)
-
-
-# # 5) POST/games/{season_id}
-# @app.post("/games/{season_id}", response_model=schemas.Games)
-# def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
-#     return crud.create_game(db, game=games)

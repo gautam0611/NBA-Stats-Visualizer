@@ -43,7 +43,7 @@ class TeamBase(BaseModel):
 
 class Team(TeamBase):
     id: int
-    conference_id: (
+    division_id: (
         int  # @FIXME figure out what needs to be done when you have foreign keys
     )
 
@@ -52,7 +52,7 @@ class Team(TeamBase):
 
 
 class TeamCreate(TeamBase):
-    conference_id: int
+    division_id: int
 
 
 class SeasonBase(BaseModel):
@@ -71,20 +71,20 @@ class SeasonCreate(SeasonBase):
     team_id: int
 
 
-class RosterBase(BaseModel):
-    name: str
+# class RosterBase(BaseModel):
+#     name: str
 
 
-class Roster(RosterBase):
-    id: int
-    season_id: int
+# class Roster(RosterBase):
+#     id: int
+#     season_id: int
 
-    class Config:
-        from_attributes = True
+#     class Config:
+#         from_attributes = True
 
 
-class RosterCreate(RosterBase):
-    season_id: int
+# class RosterCreate(RosterBase):
+#     season_id: int
 
 
 class RecordBase(BaseModel):
@@ -101,6 +101,7 @@ class Record(RecordBase):
 
 class RecordCreate(RecordBase):
     season_id: int
+    team_id: int
 
 
 class GamesBase(BaseModel):
@@ -114,6 +115,7 @@ class Games(GamesBase):
 
 class GamesCreate(GamesBase):
     season_id: int
+    team_id: int
 
 
 class PlayerBase(BaseModel):
@@ -125,8 +127,9 @@ class PlayerBase(BaseModel):
 
 class Player(PlayerBase):
     id: int
-    roster_id: int
+    season_id: int
 
 
 class PlayerCreate(PlayerBase):
-    roster_id: int
+    season_id: int
+    team_id: int

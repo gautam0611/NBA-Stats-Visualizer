@@ -133,65 +133,65 @@ def create_division(db: Session, division: DivisionCreate):
     return db_division
 
 
-"""
-@FIXME need to update this so that we can add foreign keys
-"""
-
-
 # POST /team
 def create_team(db: Session, team: TeamCreate):
-    db_team = models.Team(name=team.name)
+    db_team = models.Team(name=team.name, division_id=team.division_id)
     db.add(db_team)
     db.commit()
     db.refresh(db_team)
     return db_team
 
 
-# POST /season/{season_id}?{team_id}
+# POST /season/{team_id}
 def create_season(db: Session, season: SeasonCreate):
-    db_season = models.Season(name=season.name)
+    db_season = models.Season(name=season.name, team_id=season.team_id)
     db.add(db_season)
     db.commit()
     db.refresh(db_season)
     return db_season
 
 
-# POST /game/{season_id}?{team_id}
-def create_game(db: Session, game: GamesCreate):
-    db_game = models.Games(name=game.name)
-    db.add(db_game)
-    db.commit()
-    db.refresh(db_game)
-    return db_game
-
-
-# POST /player/{team_id}?{season_id}
-def create_player(db: Session, player: PlayerCreate):
-    db_player = models.Player(
-        name=player.name,
-        points=player.points,
-        rebounds=player.rebounds,
-        assists=player.assists,
-    )
-    db.add(db_player)
-    db.commit()
-    db.refresh(db_player)
-    return db_player
-
-
-# POST /roster/{roster_id}?{season_id}?{team_id}
-def create_roster(db: Session, roster: RosterCreate):
-    db_roster = models.Roster(name=roster.name)
-    db.add(db_roster)
-    db.commit()
-    db.refresh(db_roster)
-    return db_roster
-
-
 # POST /record
 def create_record(db: Session, record: RecordCreate):
-    db_record = models.Record(name=record.name)
+    db_record = models.Record(name=record.name, season_id=record.season_id)
     db.add(db_record)
     db.commit()
     db.refresh(db_record)
     return db_record
+
+
+"""
+@FIXME need to update this so that we can add foreign keys
+"""
+
+
+# # POST /game/{season_id}?{team_id}
+# def create_game(db: Session, game: GamesCreate):
+#     db_game = models.Games(name=game.name)
+#     db.add(db_game)
+#     db.commit()
+#     db.refresh(db_game)
+#     return db_game
+
+
+# # POST /player/{team_id}?{season_id}
+# def create_player(db: Session, player: PlayerCreate):
+#     db_player = models.Player(
+#         name=player.name,
+#         points=player.points,
+#         rebounds=player.rebounds,
+#         assists=player.assists,
+#     )
+#     db.add(db_player)
+#     db.commit()
+#     db.refresh(db_player)
+#     return db_player
+
+
+# # POST /roster/{season_id}?{team_id}
+# def create_roster(db: Session, roster: RosterCreate):
+#     db_roster = models.Roster(name=roster.name)
+#     db.add(db_roster)
+#     db.commit()
+#     db.refresh(db_roster)
+#     return db_roster
