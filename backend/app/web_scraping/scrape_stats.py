@@ -4,7 +4,7 @@ from typing import Dict, List
 import requests
 from bs4 import BeautifulSoup
 
-from backend.app.web_scraping.stats_type import StatsType
+from .stats_type import StatsType
 
 # https://sports.yahoo.com/nba/teams/boston/stats/ -> team stats
 # https://sports.yahoo.com/nba/teams/ -> divisions
@@ -18,63 +18,6 @@ class ScrapeNBAStats:
     def __init__(self, team_name, season) -> None:
         self.team_name = team_name
         self.season = season
-
-    def team_dict(self) -> dict[str, str]:
-        team_lower = self.team_name.lower().strip()
-
-        # ensure that user did not enter "Miami Heat"
-        if len(team_lower.split("")) > 1:
-            raise NameError("Not a valid team entry. Must be in the format 'celtics' ")
-
-        team_dict = {
-            "celtics": "boston",
-            "heat": "miami",
-            "nets": "brooklyn",
-            "knicks": "new-york",
-            "76ers": "philadelphia",
-            "raptors": "toronto",
-            "bulls": "chicago",
-            "cavaliers": "cleveland",  # could also be "cavs"
-            "pistons": "detroit",
-            "pistons": "indiana",
-            "bucks": "milwaukee",
-            "hawks": "atlanta",
-            "hornets": "charlotte",
-            "magic": "orlando",
-            "wizards": "washington",
-            "warriors": "golden-state",
-            "clippers": "la-clippers",
-            "lakers": "la-lakers",
-            "suns": "phoenix",
-            "kings": "sacramento",
-            "mavericks": "dallas",  # could also be "mavs"
-            "rockets": "houston",
-            "grizzlies": "memphis",
-            "pelicans": "new-orleans",
-            "spurs": "san-antonio",
-            "nuggets": "denver",
-            "wolves": "minnesota",  # could also be "timberwolves"
-            "thunder": "oklahoma-city",
-            "blazers": "portland",
-            "jazz": "utah",
-        }
-        return team_dict
-
-    def season_dict(self) -> dict[str, str]:
-        season_dict = {
-            "2023-2024": "2024",
-            "2022-2023": "2023",
-            "2021-2022": "2022",
-            "2020-2021": "2021",
-            "2019-2020": "2020",
-            "2018-2019": "2019",
-            "2017-2018": "2018",
-            "2016-2017": "2017",
-            "2015-2016": "2016",
-            "2014-2015": "2015",
-            "2013-2014": "2014",
-        }
-        return season_dict
 
     def scrape_nba_statistics(self):
         raise NotImplementedError("subclasses will handle implementation")
@@ -250,42 +193,3 @@ class ScrapeGames(ScrapeNBAStats):
             # add to our dict of dicts
             games_dict[f'{self.team_name} vs {stats_dict["opponent"]}'] = stats_dict
         return games_dict
-
-
-statistics = {
-    "Conference": ScrapeConference(),
-    "Division": ScrapeDivisions(),
-    "Team": ScrapeTeams(),
-    "Season": ScrapeSeasons(),
-    "Players": ScrapePlayers(),
-    "Record": ScrapeRecord(),
-    "Games": ScrapeGames(),
-}
-
-
-def send_data_to_api(statsType, returnSet):
-    """
-    1. requests.get to get the necessary ids needed for the response object
-    2. abstract response object schema to a helper function
-    """
-    # @FIXME change this to an argument
-    api_url = f"http://127.0.0.1:8000/{statsType.value}/{1}"
-    for value in returnSet:
-        value_to_return = {"name": value, "conference_id": 1}
-        response = requests.post(api_url, json=value_to_return)
-        if response.status_code == 200:
-            print(f"Successfully added {statsType}")
-        else:
-            print(f"Failed to add {statsType}: {response.text}")
-
-
-# playerData = scrape_nba_statistics(stats_type=StatsType.PLAYER)
-# get_division_data = ScrapeNBAStats().scrape_divisions(stats_type=StatsType.TEAM)
-divisionData = ScrapeNBAStats().scrape_nba_statistics(
-    stats_type=StatsType.TEAM, scrape_nba_stats=get_division_data
-)
-
-
-# print(divisionData)
-print(send_data_to_api(statsType=StatsType.DIVISION, returnSet=divisionData))
-# print(scrape_nba_statistics(stats_type=StatsType.TEAM))
