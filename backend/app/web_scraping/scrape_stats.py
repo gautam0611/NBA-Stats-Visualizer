@@ -222,8 +222,34 @@ class ScrapeGames(ScrapeNBAStats):
         super().__init__(team_name, season)
 
     # web scrapes the games of the specified team in a specified season
-    def scrape_nba_statistics(self):
-        pass
+    def scrape_nba_statistics(self) -> dict[str, dict[str, str]]:
+        games_dict = {}
+        url = f"https://sports.yahoo.com/nba/teams/{self.team_name}/schedule/?season={self.season}&month=3&scheduleType=list"  # eastern conference is "1" and western conference is "2"
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content, "lxml")
+
+        for tr in soup.find_all(
+            "tr", attrs={"class": "Bgc(bg-mod) Pos(r) H(45px) Bgc(secondary):h Cur(p)"}
+        ):
+            stats_dict = {}
+            # scrape all of data
+            game_date = tr.td[1].a.span.span.get_text().strip()
+            opponent = tr.td[3].span.span.get_text().strip()
+            result = tr.td[4].span.get_text().strip()
+            score_winner = tr.td[5].span[1].get_text().strip()
+            score_dash = tr.td[5].span[2].get_text().strip()
+            score_loser = tr.td[5].span[3].get_text().strip()
+            score = score_winner + score_dash + score_loser
+
+            # add our data to a dictionary
+            stats_dict["game_date"] = game_date
+            stats_dict["opponent"] = opponent
+            stats_dict["result"] = result
+            stats_dict["score"] = score
+
+            # add to our dict of dicts
+            games_dict[f'{self.team_name} vs {stats_dict["opponent"]}'] = stats_dict
+        return games_dict
 
 
 statistics = {
