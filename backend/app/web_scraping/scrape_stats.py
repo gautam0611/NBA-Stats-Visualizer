@@ -10,7 +10,7 @@ from backend.app.web_scraping.stats_type import StatsType
 # https://sports.yahoo.com/nba/teams/ -> divisions
 # https://sports.yahoo.com/nba/standings/ -> standings
 # https://sports.yahoo.com/nba/teams/boston/stats/?season=2023 -> stats for the celtics in 2023-2024
-# https://sports.yahoo.com/nba/standings/?season=2021 -> record for the 2022 season
+# https://sports.yahoo.com/nba/standings/?season=2021&selectedTab=1 -> eastern conference records for the 2022 season
 # https://sports.yahoo.com/nba/teams/miami/schedule/?season=2023&month=3 -> games miami heat played in april
 
 
@@ -60,7 +60,7 @@ class ScrapeNBAStats:
         }
         return team_dict
 
-    def season_dict(self):
+    def season_dict(self) -> dict[str, str]:
         season_dict = {
             "2023-2024": "2024",
             "2022-2023": "2023",
@@ -74,12 +74,10 @@ class ScrapeNBAStats:
             "2014-2015": "2015",
             "2013-2014": "2014",
         }
+        return season_dict
 
     def scrape_nba_statistics(self):
         raise NotImplementedError("subclasses will handle implementation")
-
-    # def json_body_to_return(self):
-    #     raise NotImplementedError("subclasses will handle implementation")
 
 
 class ScrapeConference(ScrapeNBAStats):
@@ -185,12 +183,38 @@ class ScrapePlayers(ScrapeNBAStats):
 
 
 class ScrapeRecord(ScrapeNBAStats):
-    def __init__(self, team_name, season) -> None:
+    def __init__(self, team_name, season, conference) -> None:
         super().__init__(team_name, season)
+        self.conference = conference
 
     # web scrapes the record of the specifed team in a specifed season
     def scrape_nba_statistics(self):
-        pass
+        record_dict: dict[str, str] = {}
+        # the url has a "1" or "2" in it depending on the conference
+        if self.conference.lower() == "eastern":
+            selected_tab = 1
+        elif self.conference.lower() == "western":
+            selected_tab = 2
+        else:
+            raise NameError("not a valid conference name")
+
+        url = f"https://sports.yahoo.com/nba/standings/?season={self.season}&selectedTab={selected_tab}"  # eastern conference is "1" and western conference is "2"
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content, "lxml")
+
+        # getting all of the divisions
+        division_divs = soup.find_all("div", attrs={"data-tst": "group-table"})
+
+        for division_div in division_divs:
+            team_rows = division_div.tbody.find_all("tr")
+            for team in team_rows:
+                team_name = team.th.div.div.a.span[2].get_text().lower()
+                win = team.td[1]
+                loss = team.td[2]
+                format_record = f"{win}-{loss}"
+                record_dict[team_name] = format_record
+
+        return record_dict
 
 
 class ScrapeGames(ScrapeNBAStats):
