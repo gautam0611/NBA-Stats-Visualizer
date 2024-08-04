@@ -59,7 +59,10 @@ class Player(Base):
 class Games(Base):
     __tablename__ = "Games"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255))
+    opponent = Column(String(255))
+    game_date = Column(String(255))
+    result = Column(String(255))
+    score = Column(String(255))
     season_id = Column(Integer, ForeignKey("Season.id"))
     team_id = Column(Integer, ForeignKey("Team.id"))
     season = relationship("Season", backref="Games")

@@ -87,7 +87,10 @@ class RecordCreate(RecordBase):
 
 
 class GamesBase(BaseModel):
-    name: str
+    opponent: str
+    result: str
+    score: str
+    game_date: str
 
 
 class Games(GamesBase):

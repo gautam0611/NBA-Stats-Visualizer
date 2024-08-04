@@ -131,6 +131,7 @@ def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
 #     return crud.create_season(db, season=season)
 
 
+# @FIXME need to address season because of team_id down below
 # 6) POST/games/{season_id}?{team_id}
 @app.post("/games/{season_id}?{team_id}", response_model=schemas.Games)
 def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
