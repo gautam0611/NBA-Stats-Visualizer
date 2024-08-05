@@ -18,41 +18,48 @@ from app.schemas import (
 from . import models
 
 
-# GET /{conference_id}
+# GET /{conference_name}
 # get the specified conference
-def get_conference(db: Session, conference_id: int):
+def get_conference(db: Session, conference_name: str):
     return (
         db.query(models.Conference)
-        .filter(models.Conference.id == conference_id)
+        .filter(models.Conference.name == conference_name)
         .first()
     )
 
 
-# GET /{division_id}
+# GET /division/{division_name}
 # get the specified division
-def get_division(db: Session, division_id: int):
-    return db.query(models.Division).filter(models.Division.id == division_id).first()
+def get_division(db: Session, division_name: str):
+    return (
+        db.query(models.Division).filter(models.Division.name == division_name).first()
+    )
 
 
-# GET /teams/{conference_id}
+# GET /teams/{division_name}
 # get all of the teams in the specified division
-def get_all_teams(db: Session, division_id: int):
+def get_all_teams(db: Session, division_name: int):
+    division_id = get_division(db, division_name).division_id
     return db.query(models.Team).filter(models.Team.division_id == division_id).all()
 
 
-# GET /{team_id}?{conference_id}
-# get a specific team from a specific division
-def get_team(db: Session, team_id: int, division_id: int):
-    return (
-        db.query(models.Team)
-        .filter(and_(models.Team.id == team_id, models.Team.division_id == division_id))
-        .first()
-    )
+# GET /team/{team_name}
+# get a specific team
+def get_team(db: Session, team_name: str):
+    return db.query(models.Team).filter(and_(models.Team.name == team_name)).first()
 
 
-# GET /record/{season_id}?{team_id}
+# GET /season/{season_name}
+# get a specific season
+def get_season(db: Session, season_name: str):
+    return db.query(models.Season).filter(models.Season.name == season_name).first()
+
+
+# GET /record/{season_name}?{team_name}
 # gets the record for the specified season
-def get_record(db: Session, season_id: int, team_id: int):
+def get_record(db: Session, season_name: str, team_name: str):
+    team_id = get_team(db, team_name).team_id
+    season_id = get_season(db, season_name).season_id
     return (
         db.query(models.Record)
         .join(models.Season, models.Record.season_id == models.Season.id)
@@ -67,9 +74,11 @@ def get_record(db: Session, season_id: int, team_id: int):
     )
 
 
-# GET /games/{season_id}?{team_id}
+# GET /games/{season_name}?{team_name}
 # get the games for the specified season
-def get_games(db: Session, season_id: int, team_id: int):
+def get_games(db: Session, season_name: str, team_name: str):
+    team_id = get_team(db, team_name).team_id
+    season_id = get_season(db, season_name).season_id
     return (
         db.query(models.Games)
         .join(models.Season, models.Games.season_id == models.Season.id)
@@ -84,9 +93,11 @@ def get_games(db: Session, season_id: int, team_id: int):
     )
 
 
-# GET /players/{team_id}?{season_id}
+# GET /players/{season_name}?{team_name}
 # get a list of players on a team for a specific season
-def get_players(db: Session, team_id: int, season_id: int):
+def get_players(db: Session, season_name: str, team_name: str):
+    team_id = get_team(db, team_name).team_id
+    season_id = get_season(db, season_name).season_id
     return (
         db.query(models.Player)
         .join(models.Season, models.Player.season_id == models.Season.id)

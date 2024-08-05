@@ -10,56 +10,63 @@ app = FastAPI()
 
 
 # GET requests
-@app.get("/conference/{conference_id}", response_model=schemas.Conference)
-def get_conference(conference_id: int, db: Session = Depends(get_db)):
-    db_conference = crud.get_conference(db, conference_id)
+@app.get("/conference/{conference_name}", response_model=schemas.Conference)
+def get_conference(conference_name: str, db: Session = Depends(get_db)):
+    db_conference = crud.get_conference(db, conference_name)
     if db_conference is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_conference
 
 
-@app.get("/division/{division_id}", response_model=schemas.Division)
-def get_division(division_id: int, db: Session = Depends(get_db)):
-    db_division = crud.get_division(db, division_id)
+@app.get("/division/{division_name}", response_model=schemas.Division)
+def get_division(division_name: str, db: Session = Depends(get_db)):
+    db_division = crud.get_division(db, division_name)
     if db_division is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_division
 
 
-@app.get("/all_teams/{conference_id}", response_model=schemas.Team)
-def get_all_teams(conference_id: int, db: Session = Depends(get_db)):
-    db_all_teams = crud.get_all_teams(db, conference_id)
+@app.get("/all_teams/{division_name}", response_model=schemas.Team)
+def get_all_teams(division_name: int, db: Session = Depends(get_db)):
+    db_all_teams = crud.get_all_teams(db, division_name)
     if db_all_teams is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_all_teams
 
 
-@app.get("/team/{team_id}/{conference_id}", response_model=schemas.Team)
-def get_team(team_id: int, conference_id: int, db: Session = Depends(get_db)):
-    db_team = crud.get_team(db, team_id, conference_id)
+@app.get("/team/{team_name}", response_model=schemas.Team)
+def get_team(team_name: str, db: Session = Depends(get_db)):
+    db_team = crud.get_team(db, team_name)
     if db_team is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_team
 
 
-@app.get("/record/{record_id}/{season_id}/{team_id}", response_model=schemas.Record)
-def get_record(
-    record_id: int, season_id: int, team_id: int, db: Session = Depends(get_db)
-):
-    db_record = crud.get_record(db, record_id, season_id, team_id)
+@app.get("/season/{season_name}", response_model=schemas.Season)
+def get_season(season_name: str, db: Session = Depends(get_db)):
+    db_season = crud.get_season(db, season_name)
+    if db_season is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+    return db_season
+
+
+@app.get("/record/{season_name}/{team_name}", response_model=schemas.Record)
+def get_record(season_name: str, team_name: str, db: Session = Depends(get_db)):
+    db_record = crud.get_record(db, season_name, team_name)
     if db_record is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_record
 
 
-@app.get("/games/{games_id}/{season_id}?{team_id}", response_model=schemas.Games)
-def get_games(
-    games_id: int, season_id: int, team_id: int, db: Session = Depends(get_db)
-):
-    db_games = crud.get_games(db, games_id, season_id, team_id)
+@app.get("/games/{season_name}?{team_name}", response_model=schemas.Games)
+def get_games(season_name: str, team_name: str, db: Session = Depends(get_db)):
+    db_games = crud.get_games(db, season_name, team_name)
     if db_games is None:
         raise HTTPException(status_code=404, detail="Not Found")
     return db_games
+
+
+# -----------------------------------------------------------------------------------------------
 
 
 # 1) POST/conference
