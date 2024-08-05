@@ -116,7 +116,6 @@ def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
     # Check if the season exists for the specified team
     season = (
         db.query(models.Season)
-        .join(models.Team, models.Season.team_id == models.Team.id)
         .filter(
             and_(models.Season.id == record.season_id, models.Team.id == record.team_id)
         )
