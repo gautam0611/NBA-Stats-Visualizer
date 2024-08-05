@@ -168,7 +168,11 @@ def create_player(db: Session, player: PlayerCreate):
 # POST /game/{season_id}?{team_id}
 def create_game(db: Session, game: GamesCreate):
     db_game = models.Games(
-        name=game.name, season_id=game.season_id, team_id=game.team_id
+        result=game.result,
+        opponent=game.opponent,
+        score=game.score,
+        season_id=game.season_id,
+        team_id=game.team_id,
     )
     db.add(db_game)
     db.commit()
