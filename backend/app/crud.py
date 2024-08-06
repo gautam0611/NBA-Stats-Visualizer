@@ -58,7 +58,7 @@ def get_season(db: Session, season_name: str):
 
 # GET /record/{season_name}?{team_name}
 # gets the record for the specified season
-def get_record(db: Session, season_name: str, team_name: str):
+def get_record(db: Session, record_name, season_name: str, team_name: str):
     team_id = get_team(db, team_name).team_id
     season_id = get_season(db, season_name).season_id
     return (
@@ -67,6 +67,7 @@ def get_record(db: Session, season_name: str, team_name: str):
         .join(models.Team, models.Record.team_id == models.Team.id)
         .filter(
             and_(
+                models.Record.name == record_name,
                 models.Record.season_id == season_id,
                 models.Record.team_id == team_id,
             )
@@ -94,16 +95,41 @@ def get_games(db: Session, season_name: str, team_name: str):
     )
 
 
-# GET /players/{season_name}?{team_name}
-# get a list of players on a team for a specific season
-def get_players(db: Session, season_name: str, team_name: str):
+# GET /player/{player_name}?{season_name}?{team_name}
+# get a specific player on a specific team in a specific season
+def get_player(db: Session, season_name: str, team_name: str):
     team_id = get_team(db, team_name).team_id
     season_id = get_season(db, season_name).season_id
     return (
         db.query(models.Player)
         .join(models.Season, models.Player.season_id == models.Season.id)
         .join(models.Team, models.Player.team_id == models.Team.id)
-        .filter(and_(models.Team.id == team_id, models.Season.id == season_id))
+        .filter(
+            and_(
+                models.Player.id == team_id,
+                models.Player.id == season_id,
+            )
+        )
+        .first()
+    )
+
+
+# GET /players/{season_name}?{team_name}
+# get a list of players on a team for a specific season
+def get_players(db: Session, player_name: str, season_name: str, team_name: str):
+    team_id = get_team(db, team_name).team_id
+    season_id = get_season(db, season_name).season_id
+    return (
+        db.query(models.Player)
+        .join(models.Season, models.Player.season_id == models.Season.id)
+        .join(models.Team, models.Player.team_id == models.Team.id)
+        .filter(
+            and_(
+                models.Player.name == player_name,
+                models.Team.id == team_id,
+                models.Season.id == season_id,
+            )
+        )
         .all()
     )
 

@@ -66,6 +66,18 @@ def get_games(season_name: str, team_name: str, db: Session = Depends(get_db)):
     return db_games
 
 
+@app.get(
+    "/player/{player_name}?{season_name}?{team_name}", response_model=schemas.Player
+)
+def get_player(
+    player_name: str, season_name: str, team_name: str, db: Session = Depends(get_db)
+):
+    db_player = crud.get_players(db, player_name, season_name, team_name)
+    if db_player is None:
+        raise HTTPException(status_code=404, detail="Not Found")
+    return db_player
+
+
 # -----------------------------------------------------------------------------------------------
 
 
@@ -115,10 +127,14 @@ def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
 @app.post("/record/", response_model=schemas.Record)
 def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
     # Check if the season exists for the specified team
-    season = (
-        db.query(models.Season).filter(models.Season.id == record.season_id).first()
+    season_and_team = (
+        db.query(models.Season)
+        .filter(
+            and_(models.Season.id == record.season_id, models.Team.id == record.team_id)
+        )
+        .first()
     )
-    if not season:
+    if not season_and_team:
         raise HTTPException(status_code=404, detail="Season not found")
 
     record_create = schemas.RecordCreate(
@@ -131,18 +147,21 @@ def create_record(record: schemas.RecordCreate, db: Session = Depends(get_db)):
 # 5) POST/season
 @app.post("/season/", response_model=schemas.Season)
 def create_season(season: schemas.SeasonCreate, db: Session = Depends(get_db)):
-    print(season)
-    print(crud.create_season(db, season=season))
     return crud.create_season(db, season=season)
 
 
-# @FIXME need to address season because of team_id down below
 # 6) POST/games/{season_id}?{team_id}
 @app.post("/games/", response_model=schemas.Games)
 def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
     # Check if the season exists for the specified team
-    season = db.query(models.Season).filter(models.Season.id == games.season_id).first()
-    if not season:
+    season_and_team = (
+        db.query(models.Season)
+        .filter(
+            and_(models.Season.id == games.season_id, models.Team.id == games.team_id)
+        )
+        .first()
+    )
+    if not season_and_team:
         raise HTTPException(status_code=404, detail="Season not found")
 
     games_create = schemas.GamesCreate(
@@ -161,10 +180,14 @@ def create_games(games: schemas.GamesCreate, db: Session = Depends(get_db)):
 @app.post("/player/", response_model=schemas.Player)
 def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
     # Check if the season exists for the specified team
-    season = (
-        db.query(models.Season).filter(models.Season.id == player.season_id).first()
+    season_and_team = (
+        db.query(models.Season)
+        .filter(
+            and_(models.Season.id == player.season_id, models.Team.id == player.team_id)
+        )
+        .first()
     )
-    if not season:
+    if not season_and_team:
         raise HTTPException(status_code=404, detail="Season not found")
 
     player_create = schemas.PlayerCreate(
