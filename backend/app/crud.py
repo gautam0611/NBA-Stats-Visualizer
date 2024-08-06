@@ -11,6 +11,7 @@ from app.schemas import (
     GamesCreate,
     PlayerCreate,
     RecordCreate,
+    Season,
     SeasonCreate,
     TeamCreate,
 )
@@ -101,7 +102,7 @@ def get_players(db: Session, season_name: str, team_name: str):
     return (
         db.query(models.Player)
         .join(models.Season, models.Player.season_id == models.Season.id)
-        .join(models.Team, models.Season.team_id == models.Team.id)
+        .join(models.Team, models.Player.team_id == models.Team.id)
         .filter(and_(models.Team.id == team_id, models.Season.id == season_id))
         .all()
     )
@@ -140,13 +141,13 @@ def create_team(db: Session, team: TeamCreate):
 
 
 # @FIXME
-# # POST /season/{team_id}
-# def create_season(db: Session, season: SeasonCreate):
-#     db_season = models.Season(name=season.name)
-#     db.add(db_season)
-#     db.commit()
-#     db.refresh(db_season)
-#     return db_season
+# POST /season/
+def create_season(db: Session, season: SeasonCreate):
+    db_season = models.Season(season.name)
+    db.add(db_season)
+    db.commit()
+    db.refresh(db_season)
+    return db_season
 
 
 # POST /record
