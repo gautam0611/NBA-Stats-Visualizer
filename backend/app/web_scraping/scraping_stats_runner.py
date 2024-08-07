@@ -108,16 +108,58 @@ class ScrapeStatsRunner(ScrapeNBAStats):
                 "not a valid stats-type. Must be like 'Conference', 'Division', etc."
             )
 
+    def json_body_to_return(self):
+        """
+        1. scrape the data via "scrapeNBAStatistics()
+        2. store in a list and iterate through each value
+        3. call "requests.get()" and pass in the url and data to get return body
+        """
+        base_url = "http://127.0.0.1:8000/"
+        list_of_stats_types = self.get_stats_type()
+        list_of_responses = []
+        for item in list_of_stats_types:
+
+            stats_type_json_body = {
+                "Conference": {
+                    "url": f"{base_url}/{StatsType.CONFERENCE.value}",  # @FIXME add the value we want to get back
+                    "data": item,
+                },
+                "Division": {},
+                "Team": {},
+                "Season": {},
+                "Players": {},
+                "Record": {},
+                "Games": {},
+            }
+
+            list_of_responses.append(
+                requests.get(
+                    url=stats_type_json_body[self.arg_stats_type]["url"],
+                    data=stats_type_json_body[self.arg_stats_type]["item"],
+                )
+            )
+        return list_of_responses
+
+
+"""
+1. for each corresponding datatype, we need to GET the foreign key's response body 
+- remove the id of that response body
+- store that response body and return it for use of POST
+- also return the URL needed 
+"""
+
 
 def send_data_to_api(statsType, returnSet):
     """
     1. requests.get to get the necessary ids needed for the response object
     2. abstract response object schema to a helper function
     """
-    # @FIXME change this to an argument
-    api_url = f"http://127.0.0.1:8000/{statsType.value}/{1}"
+    api_url = f"http://127.0.0.1:8000/{statsType.value}/{1}"  # need to pass in url which contains stats type and
     for value in returnSet:
-        value_to_return = {"name": value, "conference_id": 1}
+        value_to_return = {
+            "name": value,
+            "conference_id": 1,
+        }  # need to pass in json body
         response = requests.post(api_url, json=value_to_return)
         if response.status_code == 200:
             print(f"Successfully added {statsType}")
@@ -127,9 +169,9 @@ def send_data_to_api(statsType, returnSet):
 
 # playerData = scrape_nba_statistics(stats_type=StatsType.PLAYER)
 # get_division_data = ScrapeNBAStats().scrape_divisions(stats_type=StatsType.TEAM)
-divisionData = ScrapeNBAStats().scrape_nba_statistics(
-    stats_type=StatsType.TEAM, scrape_nba_stats=get_division_data
-)
+# divisionData = ScrapeNBAStats().scrape_nba_statistics(
+#     stats_type=StatsType.TEAM, scrape_nba_stats=get_division_data
+# )
 
 
 # print(divisionData)
